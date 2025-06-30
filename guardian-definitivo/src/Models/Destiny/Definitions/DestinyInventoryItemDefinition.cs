@@ -70,8 +70,35 @@ namespace GuardianDefinitivo.Models.Destiny.Definitions
         [JsonPropertyName("inventory")]
         public DestinyItemInventoryBlockDefinition? Inventory { get; set; }
 
+        [JsonPropertyName("stats")]
+        public Items.DestinyItemStatBlockDefinition? Stats { get; set; }
+
+        [JsonPropertyName("equippingBlock")]
+        public Items.DestinyItemEquippingBlockDefinition? EquippingBlock { get; set; }
+
+        [JsonPropertyName("perks")]
+        public List<Items.DestinyItemPerkEntryDefinition>? Perks { get; set; }
+
+        [JsonPropertyName("sockets")]
+        public Sockets.DestinyItemSocketBlockDefinition? Sockets { get; set; }
+
+        [JsonPropertyName("itemSubType")]
+        public int ItemSubType { get; set; } // Enum: DestinyItemSubType
+
+        [JsonPropertyName("classType")]
+        public int ClassType { get; set; } // Enum: DestinyClass
+
+        [JsonPropertyName("defaultDamageType")]
+        public int DefaultDamageType { get; set; } // Enum: DamageType, 0 if not applicable
+
+        [JsonPropertyName("defaultDamageTypeHash")]
+        public uint? DefaultDamageTypeHash { get; set; } // Hash for DestinyDamageTypeDefinition
+
+        [JsonPropertyName("damageTypeHashes")]
+        public List<uint>? DamageTypeHashes { get; set; } // Hashes for DestinyDamageTypeDefinition
+
         // Other potentially useful fields to add later:
-        // itemSubType, classType, equippable, defaultDamageType, investmentStats, perks, loreHash, etc.
+        // loreHash, investmentStats (DestinyItemInvestmentStatDefinition) etc.
 
         // Standard DestinyDefinition properties
         // These are inherited from the base class DestinyDefinition

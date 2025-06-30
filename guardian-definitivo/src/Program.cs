@@ -117,10 +117,14 @@ public class Program
                         DestinyComponentType.CharacterEquipment,// Para items equipados
                         DestinyComponentType.CharacterInventories, // Para items en inventario de personaje
                         DestinyComponentType.ProfileInventories, // Para la Bóveda
-                        DestinyComponentType.ItemInstances,     // Stats de instancia (nivel de luz, etc.)
-                        DestinyComponentType.ItemSockets,       // Sockets y mods
-                        DestinyComponentType.ItemPerks,         // Perks de items
-                        DestinyComponentType.ItemStats          // Stats base de items
+                        // Componentes de Item:
+                        DestinyComponentType.ItemInstances,     // Datos de instancia (nivel de luz, tipo de daño de instancia, etc.)
+                        DestinyComponentType.ItemSockets,       // Sockets equipados (mods)
+                        DestinyComponentType.ItemPerks,         // Perks activos en el item (de la instancia)
+                        DestinyComponentType.ItemStats,         // Stats de la instancia del item
+                        DestinyComponentType.ItemReusablePlugs, // Para ver opciones de perks/mods si es necesario más adelante
+                        DestinyComponentType.ItemPlugObjectives // Progreso de objetivos en plugs (catalizadores, etc.)
+                        // No necesitamos ItemRenderData (303) ni ItemTalentGrids (306) para la visualización básica
                     };
 
                     var destinyProfileResponse = await apiClient.GetDestinyProfileAsync(primaryDestinyProfile.membershipType, primaryDestinyProfile.membershipId, componentsToFetch);
@@ -142,44 +146,120 @@ public class Program
                             long firstCharacterId = firstCharacter.Key;
                             var characterData = firstCharacter.Value;
 
+                            string className = "Desconocida";
+                            string raceName = "Desconocida";
+                            string genderName = "Desconocido";
+
+                            if (manifestService != null)
+                            {
+                                var classDef = await manifestService.GetClassDefinitionAsync(characterData.ClassHash);
+                                className = classDef?.DisplayProperties?.Name ?? className;
+                                var raceDef = await manifestService.GetRaceDefinitionAsync(characterData.RaceHash);
+                                raceName = raceDef?.DisplayProperties?.Name ?? raceName;
+                                var genderDef = await manifestService.GetGenderDefinitionAsync(characterData.GenderHash);
+                                genderName = genderDef?.DisplayProperties?.Name ?? genderName;
+                            }
+
                             Console.WriteLine($"[Main] --- Personaje Principal ({characterData.CharacterId}) ---");
-                            // Aquí podríamos usar el Manifest para obtener Class, Race, Gender
+                            Console.WriteLine($"  Clase: {className}, Raza: {raceName}, Género: {genderName}");
                             Console.WriteLine($"  Luz: {characterData.Light}, Nivel: {characterData.BaseCharacterLevel}");
                             Console.WriteLine($"  Tiempo jugado: {characterData.MinutesPlayedTotal} minutos");
 
                             // Items equipados
                             if (destinyProfileResponse.CharacterEquipment?.Data?.TryGetValue(firstCharacterId, out var equippedItems) == true && equippedItems.Items != null)
                             {
-                                Console.WriteLine("  Items Equipados (primeros 5):");
+                                Console.WriteLine("  --- Items Equipados ---");
                                 if (manifestService != null) // Asegurarse que el manifest está disponible
                                 {
-                                    foreach (var item in equippedItems.Items.Take(5))
+                                    foreach (var itemComponent in equippedItems.Items) // No limitaremos a 5 por ahora para la prueba
                                     {
-                                        var itemDef = await manifestService.GetInventoryItemDefinitionAsync(item.ItemHash);
-                                        string itemName = itemDef?.DisplayProperties?.Name ?? $"Item Hash: {item.ItemHash}";
-                                        string itemType = itemDef?.ItemTypeDisplayName ?? "Desconocido";
-
-                                        Console.Write($"    - {itemName} ({itemType}) (Instancia: {item.ItemInstanceId?.ToString() ?? "N/A"})");
-                                        if (item.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents?.Instances?.Data?.TryGetValue(item.ItemInstanceId.Value, out var instanceData) == true)
+                                        var itemDef = await manifestService.GetInventoryItemDefinitionAsync(itemComponent.ItemHash);
+                                        if (itemDef == null)
                                         {
-                                            Console.Write($", Luz: {instanceData.ItemLevel}");
+                                            Console.WriteLine($"    - ItemHash: {itemComponent.ItemHash} (Definición no encontrada)");
+                                            continue;
                                         }
-                                        Console.WriteLine();
+
+                                        Models.Destiny.Entities.Items.DestinyItemInstanceComponent? instanceData = null;
+                                        Models.Destiny.Components.Items.DestinyItemStatsComponent? instanceStats = null;
+                                        Models.Destiny.Components.Items.DestinyItemPerksComponent? instancePerks = null;
+                                        Models.Destiny.Components.Items.DestinyItemSocketsComponent? instanceSockets = null;
+
+                                        if (itemComponent.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents != null)
+                                        {
+                                            destinyProfileResponse.ItemComponents.Instances?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceData);
+                                            destinyProfileResponse.ItemComponents.Stats?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceStats);
+                                            destinyProfileResponse.ItemComponents.Perks?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instancePerks);
+                                            destinyProfileResponse.ItemComponents.Sockets?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceSockets);
+                                        }
+
+                                        Console.WriteLine(await UI.Helpers.DisplayHelper.FormatItemDetailsAsync(
+                                            manifestService, itemComponent, itemDef, instanceData, instanceStats, instancePerks, instanceSockets
+                                        ));
                                     }
                                 }
                                 else
                                 {
-                                    // Fallback si el manifest no está disponible
-                                    foreach (var item in equippedItems.Items.Take(5))
+                                    Console.WriteLine("    ManifestService no disponible para mostrar detalles de items.");
+                                    foreach (var item in equippedItems.Items.Take(5)) // Fallback
                                     {
                                         Console.WriteLine($"    - ItemHash: {item.ItemHash} (Instancia: {item.ItemInstanceId?.ToString() ?? "N/A"})");
                                     }
                                 }
                             }
-                             // Items en el inventario del personaje
+                             // Items en el inventario del personaje (mostrar algunos)
                             if (destinyProfileResponse.CharacterInventories?.Data?.TryGetValue(firstCharacterId, out var charInventory) == true && charInventory.Items != null)
                             {
-                                Console.WriteLine($"  Items en el inventario del personaje: {charInventory.Items.Count}");
+                                Console.WriteLine($"  --- Items en Inventario del Personaje ({charInventory.Items.Count} items) (mostrando hasta 3) ---");
+                                if (manifestService != null)
+                                {
+                                    foreach (var itemComponent in charInventory.Items.Take(3))
+                                    {
+                                        var itemDef = await manifestService.GetInventoryItemDefinitionAsync(itemComponent.ItemHash);
+                                        if (itemDef == null) { Console.WriteLine($"    - ItemHash: {itemComponent.ItemHash} (Definición no encontrada)"); continue; }
+
+                                        Models.Destiny.Entities.Items.DestinyItemInstanceComponent? instanceData = null;
+                                        Models.Destiny.Components.Items.DestinyItemStatsComponent? instanceStats = null;
+                                        Models.Destiny.Components.Items.DestinyItemPerksComponent? instancePerks = null;
+                                        Models.Destiny.Components.Items.DestinyItemSocketsComponent? instanceSockets = null;
+                                        if (itemComponent.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents != null)
+                                        {
+                                            destinyProfileResponse.ItemComponents.Instances?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceData);
+                                            destinyProfileResponse.ItemComponents.Stats?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceStats);
+                                            destinyProfileResponse.ItemComponents.Perks?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instancePerks);
+                                            destinyProfileResponse.ItemComponents.Sockets?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceSockets);
+                                        }
+                                        Console.WriteLine(await UI.Helpers.DisplayHelper.FormatItemDetailsAsync(
+                                            manifestService, itemComponent, itemDef, instanceData, instanceStats, instancePerks, instanceSockets
+                                        ));
+                                    }
+                                }
+                            }
+
+                            // Items en la Bóveda (mostrar algunos)
+                            if (destinyProfileResponse.ProfileInventory?.Data?.Items != null && manifestService != null)
+                            {
+                                Console.WriteLine($"  --- Items en la Bóveda ({destinyProfileResponse.ProfileInventory.Data.Items.Count} items) (mostrando hasta 3) ---");
+                                foreach (var itemComponent in destinyProfileResponse.ProfileInventory.Data.Items.Take(3))
+                                {
+                                    var itemDef = await manifestService.GetInventoryItemDefinitionAsync(itemComponent.ItemHash);
+                                    if (itemDef == null) { Console.WriteLine($"    - ItemHash: {itemComponent.ItemHash} (Definición no encontrada)"); continue; }
+
+                                    Models.Destiny.Entities.Items.DestinyItemInstanceComponent? instanceData = null;
+                                    Models.Destiny.Components.Items.DestinyItemStatsComponent? instanceStats = null;
+                                    Models.Destiny.Components.Items.DestinyItemPerksComponent? instancePerks = null;
+                                    Models.Destiny.Components.Items.DestinyItemSocketsComponent? instanceSockets = null;
+                                    if (itemComponent.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents != null)
+                                    {
+                                        destinyProfileResponse.ItemComponents.Instances?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceData);
+                                        destinyProfileResponse.ItemComponents.Stats?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceStats);
+                                        destinyProfileResponse.ItemComponents.Perks?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instancePerks);
+                                        destinyProfileResponse.ItemComponents.Sockets?.Data?.TryGetValue(itemComponent.ItemInstanceId.Value, out instanceSockets);
+                                    }
+                                    Console.WriteLine(await UI.Helpers.DisplayHelper.FormatItemDetailsAsync(
+                                        manifestService, itemComponent, itemDef, instanceData, instanceStats, instancePerks, instanceSockets
+                                    ));
+                                }
                             }
                         }
                     }
