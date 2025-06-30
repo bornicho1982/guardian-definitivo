@@ -1,5 +1,0 @@
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.GeneratedMSBuildEditorConfig.editorconfig
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.AssemblyInfoInputs.cache
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.AssemblyInfo.cs
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.csproj.CoreCompileInputs.cache
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.sourcelink.json
