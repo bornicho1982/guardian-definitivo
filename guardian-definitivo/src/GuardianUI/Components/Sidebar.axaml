@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             x:Class="GuardianUI.Components.Sidebar">
+  <Border Background="#252525" Width="180">
+    <StackPanel Spacing="10" Margin="10">
+      <TextBlock Text="Guardián Definitivo" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
+      <Button Content="Inventario" Command="{Binding NavigateToInventoryCommand}" Style="{StaticResource SidebarButton}"/>
+      <Button Content="Builds" Command="{Binding NavigateToBuildsCommand}" Style="{StaticResource SidebarButton}"/>
+      <Button Content="Actividades" Command="{Binding NavigateToActivitiesCommand}" Style="{StaticResource SidebarButton}"/>
+      <Button Content="Ghost AI" Command="{Binding NavigateToGhostCommand}" Style="{StaticResource SidebarButton}"/>
+      <Button Content="Ajustes" Command="{Binding NavigateToSettingsCommand}" Style="{StaticResource SidebarButton}" VerticalAlignment="Bottom"/>
+    </StackPanel>
+  </Border>
+
+  <UserControl.Styles>
+    <Style Selector="Button.SidebarButton">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{StaticResource BrushTextPrincipal}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="Padding" Value="15,10"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="3"/>
+    </Style>
+    <Style Selector="Button.SidebarButton:pointerover">
+      <Setter Property="Background" Value="{StaticResource BrushArcano}"/>
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+     <Style Selector="Button.SidebarButton:pressed">
+      <Setter Property="Background" Value="#2A70CF"/> <!-- Darker Arcano -->
+    </Style>
+  </UserControl.Styles>
+</UserControl>

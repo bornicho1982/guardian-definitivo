@@ -1,0 +1,35 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- This style resources dictionary is imported in App.axaml. -->
+    <!-- Add Naming Resource Dictionaries in here e.g: <ResourceDictionary.MergedDictionaries> <ResourceDictionary Source="/PathToYourDictionary.axaml"/> </ResourceDictionary.MergedDictionaries> -->
+
+    <!-- Example of a global style (uncomment and modify as needed) -->
+    <!--
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="#3790FF"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="10,5"/>
+    </Style>
+    -->
+
+    <!-- Define colors as resources (as per your design document) -->
+    <Color x:Key="ColorArcano">#3790FF</Color>
+    <SolidColorBrush x:Key="BrushArcano" Color="{StaticResource ColorArcano}"/>
+
+    <Color x:Key="ColorSolar">#FFC857</Color>
+    <SolidColorBrush x:Key="BrushSolar" Color="{StaticResource ColorSolar}"/>
+
+    <Color x:Key="ColorVacio">#A170F0</Color>
+    <SolidColorBrush x:Key="BrushVacio" Color="{StaticResource ColorVacio}"/>
+
+    <Color x:Key="ColorBackgroundGeneral">#1E1E1E</Color>
+    <SolidColorBrush x:Key="BrushBackgroundGeneral" Color="{StaticResource ColorBackgroundGeneral}"/>
+
+    <Color x:Key="ColorTextPrincipal">#F2F2F2</Color>
+    <SolidColorBrush x:Key="BrushTextPrincipal" Color="{StaticResource ColorTextPrincipal}"/>
+
+    <Color x:Key="ColorTextSecundario">#B0B0B0</Color>
+    <SolidColorBrush x:Key="BrushTextSecundario" Color="{StaticResource ColorTextSecundario}"/>
+
+</Styles>
