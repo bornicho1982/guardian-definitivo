@@ -1,0 +1,59 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="10">
+        <TextBlock Text="Texto Principal" Classes="MainText"/>
+        <TextBlock Text="Texto Secundario" Classes="SecondaryText"/>
+        <Button Content="Botón Arcano" Classes="ArcaneButton"/>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Colores Principales -->
+  <Color x:Key="ColorGeneralBackground">#1E1E1E</Color>
+  <Color x:Key="ColorTextPrimary">#F2F2F2</Color>
+  <Color x:Key="ColorTextSecondary">#B0B0B0</Color>
+  <Color x:Key="ColorArcaneAccent">#3790FF</Color>
+  <Color x:Key="ColorSolarAccent">#FFC857</Color>
+  <Color x:Key="ColorVoidAccent">#A170F0</Color>
+
+  <SolidColorBrush x:Key="BrushGeneralBackground" Color="{StaticResource ColorGeneralBackground}"/>
+  <SolidColorBrush x:Key="BrushTextPrimary" Color="{StaticResource ColorTextPrimary}"/>
+  <SolidColorBrush x:Key="BrushTextSecondary" Color="{StaticResource ColorTextSecondary}"/>
+  <SolidColorBrush x:Key="BrushArcaneAccent" Color="{StaticResource ColorArcaneAccent}"/>
+  <SolidColorBrush x:Key="BrushSolarAccent" Color="{StaticResource ColorSolarAccent}"/>
+  <SolidColorBrush x:Key="BrushVoidAccent" Color="{StaticResource ColorVoidAccent}"/>
+
+  <!-- Estilos de Texto -->
+  <Style Selector="TextBlock.MainText">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="FontFamily" Value="Rajdhani, Segoe UI, Roboto"/>
+  </Style>
+
+  <Style Selector="TextBlock.SecondaryText">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
+    <Setter Property="FontFamily" Value="Rajdhani, Segoe UI, Roboto"/>
+  </Style>
+
+  <!-- Estilo Base para Ventana -->
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{StaticResource BrushGeneralBackground}"/>
+  </Style>
+  <Style Selector="UserControl">
+      <Setter Property="Background" Value="{StaticResource BrushGeneralBackground}"/>
+  </Style>
+
+  <!-- Estilo para Botones -->
+  <Style Selector="Button.ArcaneButton">
+    <Setter Property="Background" Value="{StaticResource BrushArcaneAccent}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="CornerRadius" Value="3"/>
+    <Setter Property="Padding" Value="10,5"/>
+    <Setter Property="FontFamily" Value="Rajdhani, Segoe UI, Roboto"/>
+  </Style>
+
+  <!-- TODO: Añadir más estilos para bordes redondeados, sombras, transiciones, etc. -->
+
+</Styles>

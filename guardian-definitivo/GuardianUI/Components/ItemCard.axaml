@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GuardianUI.ViewModels"
+             x:Class="GuardianUI.Components.ItemCard"
+             x:DataType="vm:InventoryItemDisplayViewModel"
+             Width="180" Height="240" Margin="5" ClipToBounds="True">
+    <Design.DataContext>
+        <vm:InventoryItemDisplayViewModel
+            ItemComponent="{x:Null}"
+            ItemDefinition="{x:Null}"
+            InstanceComponent="{x:Null}">
+            <vm:InventoryItemDisplayViewModel.Name>Nombre del Item Largo de Ejemplo</vm:InventoryItemDisplayViewModel.Name>
+            <vm:InventoryItemDisplayViewModel.IconPath>/Assets/avalonia-logo.ico</vm:InventoryItemDisplayViewModel.IconPath>
+            <vm:InventoryItemDisplayViewModel.TierTypeName>Exótico</vm:InventoryItemDisplayViewModel.TierTypeName>
+            <vm:InventoryItemDisplayViewModel.PowerLevel>1810</vm:InventoryItemDisplayViewModel.PowerLevel>
+        </vm:InventoryItemDisplayViewModel>
+    </Design.DataContext>
+
+    <Border Background="#2A2A2A" CornerRadius="5" BorderBrush="{Binding TierTypeName, Converter={StaticResource TierToBorderBrushConverter}, FallbackValue=Gray}" BorderThickness="2">
+        <Grid RowDefinitions="Auto,*,Auto,Auto" MaxWidth="180">
+            <!-- Icono del Item -->
+            <Image Grid.Row="0" Source="{Binding IconPath, Converter={StaticResource ImageSourceConverter}}" Height="80" Width="80" Margin="5" HorizontalAlignment="Center" Stretch="Uniform" />
+
+            <!-- Nombre del Item -->
+            <TextBlock Grid.Row="1" Text="{Binding Name}" Foreground="White" FontWeight="SemiBold" FontSize="14" Margin="5,0,5,5" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+
+            <!-- Nivel de Luz -->
+            <TextBlock Grid.Row="2" Text="{Binding PowerLevel, StringFormat='⚡ {0}'}" Foreground="#FFC857" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" IsVisible="{Binding PowerLevel, Converter={StaticResource IntToBoolConverter}}"/>
+
+            <!-- Tier/Rareza -->
+            <Border Grid.Row="3" Background="{Binding TierTypeName, Converter={StaticResource TierToBackgroundBrushConverter}, FallbackValue=#444444}" Padding="8,3" HorizontalAlignment="Stretch">
+                <TextBlock Text="{Binding TierTypeName}" Foreground="White" FontSize="10" HorizontalAlignment="Center" TextAlignment="Center"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>
