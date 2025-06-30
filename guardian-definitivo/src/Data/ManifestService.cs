@@ -266,6 +266,28 @@ namespace GuardianDefinitivo.Data
 
         // Puedes añadir más métodos de consulta para otras definiciones aquí (e.g., DestinyObjectiveDefinition, DestinyActivityDefinition, etc.)
 
+        public async Task<DestinyDamageTypeDefinition?> GetDamageTypeDefinitionAsync(uint damageTypeHash)
+        {
+            return await GetDefinitionAsync<DestinyDamageTypeDefinition>(damageTypeHash, "DestinyDamageTypeDefinition");
+        }
+
+        public async Task<DestinyClassDefinition?> GetClassDefinitionAsync(uint classHash)
+        {
+            return await GetDefinitionAsync<DestinyClassDefinition>(classHash, "DestinyClassDefinition");
+        }
+
+        public async Task<DestinyRaceDefinition?> GetRaceDefinitionAsync(uint raceHash)
+        {
+            return await GetDefinitionAsync<DestinyRaceDefinition>(raceHash, "DestinyRaceDefinition");
+        }
+
+        public async Task<DestinyGenderDefinition?> GetGenderDefinitionAsync(uint genderHash)
+        {
+            return await GetDefinitionAsync<DestinyGenderDefinition>(genderHash, "DestinyGenderDefinition");
+        }
+
+        // TODO: Consider adding methods for DestinySocketTypeDefinition, DestinyStatGroupDefinition, etc. if needed.
+
         public void Dispose()
         {
             // SqliteConnection se dispone en GetDefinitionAsync gracias al `await using`.
