@@ -1,15 +1,5 @@
-F:\guardian-definitivo\src\GuardianDefinitivo\bin\Debug\net9.0\GuardianDefinitivo.exe
-F:\guardian-definitivo\src\GuardianDefinitivo\bin\Debug\net9.0\GuardianDefinitivo.deps.json
-F:\guardian-definitivo\src\GuardianDefinitivo\bin\Debug\net9.0\GuardianDefinitivo.runtimeconfig.json
-F:\guardian-definitivo\src\GuardianDefinitivo\bin\Debug\net9.0\GuardianDefinitivo.dll
-F:\guardian-definitivo\src\GuardianDefinitivo\bin\Debug\net9.0\GuardianDefinitivo.pdb
 F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.GeneratedMSBuildEditorConfig.editorconfig
 F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.AssemblyInfoInputs.cache
 F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.AssemblyInfo.cs
 F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.csproj.CoreCompileInputs.cache
 F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.sourcelink.json
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.dll
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\refint\GuardianDefinitivo.dll
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.pdb
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\GuardianDefinitivo.genruntimeconfig.cache
-F:\guardian-definitivo\src\GuardianDefinitivo\obj\Debug\net9.0\ref\GuardianDefinitivo.dll
