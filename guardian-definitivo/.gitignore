@@ -1,0 +1,59 @@
+# User-specific files
+*.DS_Store
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio cache files
+.vs/
+*.csproj.vspscc
+*.vssscc
+.DS_Store
+
+# Rider
+.idea/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.[Tt]est[Ll]og*
+[Nn][Uu]nit*/
+[Vv][Ss][Tt]est[Cc]onsole[Ll]ogger[Ll]og*
+
+# Dotnet files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Secrets files
+src/AppSecrets.json
+**/AppSecrets.json
+
+# Environment files
+.env
+
+# Rider specific
+.idea/*
+!.idea/encodings.xml
+!.idea/misc.xml
+!.idea/vcs.xml
+!.idea/workspace.xml
+!.idea/.idea.GuardianDefinitivo.dir/.idea/
+
+# Specific to this project
+guardian-definitivo/src/AppSecrets.json
