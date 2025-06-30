@@ -9,6 +9,7 @@ public class Program
 {
     // HttpClient debe ser instanciado una vez y reutilizado
     private static readonly HttpClient httpClient = new HttpClient();
+    private static ManifestService? manifestService; // Para acceder al Manifest
 
     public static async Task Main(string[] args)
     {
@@ -28,6 +29,12 @@ public class Program
         // 2. Instanciar BungieOAuthHandler y BungieApiClient
         var oAuthHandler = new BungieOAuthHandler(authConfig, httpClient);
         var apiClient = new BungieApiClient(httpClient, authConfig, oAuthHandler);
+
+        // 2.5 Instanciar y preparar ManifestService
+        Console.WriteLine("[Main] Inicializando ManifestService...");
+        manifestService = new ManifestService(apiClient, httpClient);
+        await manifestService.InitializeAsync(); // Descarga/actualiza el manifest si es necesario
+        Console.WriteLine("[Main] ManifestService inicializado.");
 
         // 3. Simular flujo de autenticación OAuth
         string? accessToken = await oAuthHandler.GetAccessTokenAsync();
@@ -144,14 +151,28 @@ public class Program
                             if (destinyProfileResponse.CharacterEquipment?.Data?.TryGetValue(firstCharacterId, out var equippedItems) == true && equippedItems.Items != null)
                             {
                                 Console.WriteLine("  Items Equipados (primeros 5):");
-                                foreach (var item in equippedItems.Items.Take(5))
+                                if (manifestService != null) // Asegurarse que el manifest está disponible
                                 {
-                                    // Para mostrar el nombre del item, necesitaríamos el Manifest. Por ahora, solo el hash.
-                                    Console.WriteLine($"    - ItemHash: {item.ItemHash} (Instancia: {item.ItemInstanceId?.ToString() ?? "N/A"})");
-                                    // Podríamos intentar obtener el nivel de luz del item si es una instancia
-                                    if (item.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents?.Instances?.Data?.TryGetValue(item.ItemInstanceId.Value, out var instanceData) == true)
+                                    foreach (var item in equippedItems.Items.Take(5))
                                     {
-                                        Console.WriteLine($"      Luz del item: {instanceData.ItemLevel}");
+                                        var itemDef = await manifestService.GetInventoryItemDefinitionAsync(item.ItemHash);
+                                        string itemName = itemDef?.DisplayProperties?.Name ?? $"Item Hash: {item.ItemHash}";
+                                        string itemType = itemDef?.ItemTypeDisplayName ?? "Desconocido";
+
+                                        Console.Write($"    - {itemName} ({itemType}) (Instancia: {item.ItemInstanceId?.ToString() ?? "N/A"})");
+                                        if (item.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents?.Instances?.Data?.TryGetValue(item.ItemInstanceId.Value, out var instanceData) == true)
+                                        {
+                                            Console.Write($", Luz: {instanceData.ItemLevel}");
+                                        }
+                                        Console.WriteLine();
+                                    }
+                                }
+                                else
+                                {
+                                    // Fallback si el manifest no está disponible
+                                    foreach (var item in equippedItems.Items.Take(5))
+                                    {
+                                        Console.WriteLine($"    - ItemHash: {item.ItemHash} (Instancia: {item.ItemInstanceId?.ToString() ?? "N/A"})");
                                     }
                                 }
                             }
