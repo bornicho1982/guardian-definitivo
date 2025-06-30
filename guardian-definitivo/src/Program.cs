@@ -69,22 +69,107 @@ public class Program
         Console.WriteLine("[Main] Obteniendo datos del perfil de Bungie.net...");
         var membershipData = await apiClient.GetCurrentUserMembershipDataAsync();
 
-        if (membershipData != null)
+        if (membershipData != null && membershipData.bungieNetUser != null)
         {
             Console.WriteLine($"[Main] ¡Hola, {membershipData.bungieNetUser?.displayName} (ID: {membershipData.bungieNetUser?.membershipId})!");
             if (membershipData.destinyMemberships != null && membershipData.destinyMemberships.Count > 0)
             {
                 Console.WriteLine("[Main] Perfiles de Destiny 2 vinculados:");
+                Models.GroupV2.GroupUserInfoCard? primaryDestinyProfile = null;
+
+                if (membershipData.primaryMembershipId.HasValue)
+                {
+                    primaryDestinyProfile = membershipData.destinyMemberships.FirstOrDefault(p => p.membershipId == membershipData.primaryMembershipId.Value);
+                    Console.WriteLine($"[Main] ID de membresía primaria de Destiny: {membershipData.primaryMembershipId.Value}");
+                }
+
+                if (primaryDestinyProfile == null)
+                {
+                    primaryDestinyProfile = membershipData.destinyMemberships.FirstOrDefault();
+                    if (primaryDestinyProfile != null)
+                    {
+                         Console.WriteLine($"[Main] No se encontró membresía primaria explícita, se usará la primera disponible: {primaryDestinyProfile.membershipId} ({primaryDestinyProfile.membershipType})");
+                    }
+                }
+
                 foreach (var profile in membershipData.destinyMemberships)
                 {
-                    Console.WriteLine($"  - Plataforma: {profile.membershipType} (ID: {profile.membershipId})");
+                    Console.WriteLine($"  - Plataforma: {profile.membershipType} (ID: {profile.membershipId}) {(profile.membershipId == primaryDestinyProfile?.membershipId ? "[PRIMARIO/SELECCIONADO]" : "")}");
                     Console.WriteLine($"    Nombre Global: {profile.bungieGlobalDisplayName}#{profile.bungieGlobalDisplayNameCode}");
                     Console.WriteLine($"    Nombre en Plataforma: {profile.displayName}");
                 }
 
-                if (membershipData.primaryMembershipId.HasValue)
+                if (primaryDestinyProfile != null)
                 {
-                    Console.WriteLine($"[Main] ID de membresía primaria: {membershipData.primaryMembershipId.Value}");
+                    Console.WriteLine($"[Main] Intentando cargar inventario para el perfil: {primaryDestinyProfile.displayName} ({primaryDestinyProfile.membershipId} en {primaryDestinyProfile.membershipType})...");
+
+                    var componentsToFetch = new List<DestinyComponentType>
+                    {
+                        DestinyComponentType.Profiles,          // Para info general del perfil Destiny
+                        DestinyComponentType.Characters,        // Para obtener IDs y datos básicos de personajes
+                        DestinyComponentType.CharacterEquipment,// Para items equipados
+                        DestinyComponentType.CharacterInventories, // Para items en inventario de personaje
+                        DestinyComponentType.ProfileInventories, // Para la Bóveda
+                        DestinyComponentType.ItemInstances,     // Stats de instancia (nivel de luz, etc.)
+                        DestinyComponentType.ItemSockets,       // Sockets y mods
+                        DestinyComponentType.ItemPerks,         // Perks de items
+                        DestinyComponentType.ItemStats          // Stats base de items
+                    };
+
+                    var destinyProfileResponse = await apiClient.GetDestinyProfileAsync(primaryDestinyProfile.membershipType, primaryDestinyProfile.membershipId, componentsToFetch);
+
+                    if (destinyProfileResponse != null)
+                    {
+                        Console.WriteLine("[Main] ¡Datos del perfil de Destiny obtenidos con éxito!");
+
+                        // Mostrar información de la bóveda (ProfileInventories)
+                        if (destinyProfileResponse.ProfileInventory?.Data?.Items != null)
+                        {
+                            Console.WriteLine($"[Main] Items en la Bóveda: {destinyProfileResponse.ProfileInventory.Data.Items.Count}");
+                        }
+
+                        // Mostrar información del primer personaje (si existe)
+                        if (destinyProfileResponse.Characters?.Data != null && destinyProfileResponse.Characters.Data.Any())
+                        {
+                            var firstCharacter = destinyProfileResponse.Characters.Data.First();
+                            long firstCharacterId = firstCharacter.Key;
+                            var characterData = firstCharacter.Value;
+
+                            Console.WriteLine($"[Main] --- Personaje Principal ({characterData.CharacterId}) ---");
+                            // Aquí podríamos usar el Manifest para obtener Class, Race, Gender
+                            Console.WriteLine($"  Luz: {characterData.Light}, Nivel: {characterData.BaseCharacterLevel}");
+                            Console.WriteLine($"  Tiempo jugado: {characterData.MinutesPlayedTotal} minutos");
+
+                            // Items equipados
+                            if (destinyProfileResponse.CharacterEquipment?.Data?.TryGetValue(firstCharacterId, out var equippedItems) == true && equippedItems.Items != null)
+                            {
+                                Console.WriteLine("  Items Equipados (primeros 5):");
+                                foreach (var item in equippedItems.Items.Take(5))
+                                {
+                                    // Para mostrar el nombre del item, necesitaríamos el Manifest. Por ahora, solo el hash.
+                                    Console.WriteLine($"    - ItemHash: {item.ItemHash} (Instancia: {item.ItemInstanceId?.ToString() ?? "N/A"})");
+                                    // Podríamos intentar obtener el nivel de luz del item si es una instancia
+                                    if (item.ItemInstanceId.HasValue && destinyProfileResponse.ItemComponents?.Instances?.Data?.TryGetValue(item.ItemInstanceId.Value, out var instanceData) == true)
+                                    {
+                                        Console.WriteLine($"      Luz del item: {instanceData.ItemLevel}");
+                                    }
+                                }
+                            }
+                             // Items en el inventario del personaje
+                            if (destinyProfileResponse.CharacterInventories?.Data?.TryGetValue(firstCharacterId, out var charInventory) == true && charInventory.Items != null)
+                            {
+                                Console.WriteLine($"  Items en el inventario del personaje: {charInventory.Items.Count}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("[Main] No se pudieron obtener los datos del perfil de Destiny.");
+                    }
+                }
+                else
+                {
+                     Console.WriteLine("[Main] No se pudo determinar un perfil de Destiny para cargar el inventario.");
                 }
             }
             else
@@ -94,7 +179,7 @@ public class Program
         }
         else
         {
-            Console.WriteLine("[Main] No se pudo obtener la información del perfil.");
+            Console.WriteLine("[Main] No se pudo obtener la información del perfil de Bungie.net.");
         }
 
         Console.WriteLine("[Main] Fin de la demostración. Presiona cualquier tecla para salir.");
