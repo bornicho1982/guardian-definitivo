@@ -1,7 +1,8 @@
 using Avalonia.Controls.Design;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using GuardianDefinitivo.Models.UI; // Corrected using statement
+using GuardianUI.Models; // We'll define this soon
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,12 +26,10 @@ public partial class InventoryViewModel : ViewModelBase
 
     // TODO: Inject a service here to fetch actual inventory data
     // private readonly IInventoryService _inventoryService;
-    // For example, this could come from your existing AppServices in the main project
-    // private readonly GuardianDefinitivo.Services.AppServices _appServices;
 
-    // public InventoryViewModel(GuardianDefinitivo.Services.AppServices appServices)
+    // public InventoryViewModel(IInventoryService inventoryService)
     // {
-    // _appServices = appServices;
+    // _inventoryService = inventoryService;
     // LoadInventoryCommand = new AsyncRelayCommand(ExecuteLoadInventoryAsync);
     // }
 
@@ -38,6 +37,7 @@ public partial class InventoryViewModel : ViewModelBase
     {
         LoadInventoryCommand = new AsyncRelayCommand(ExecuteLoadInventoryAsync);
 
+        // Load design-time data if using Avalonia designer
         if (Design.IsDesignMode)
         {
             LoadDesignTimeData();
@@ -52,11 +52,12 @@ public partial class InventoryViewModel : ViewModelBase
         CharacterItems.Clear();
         VaultItems.Clear();
 
-        await Task.Delay(1500); // Simulate API call delay
+        // Simulate API call delay
+        await Task.Delay(1500);
 
-        // TODO: Replace with actual data fetching logic using _appServices or similar
+        // TODO: Replace with actual data fetching logic using _inventoryService
         // For now, using placeholder/sample data loading logic
-        LoadDesignTimeData(count: 5);
+        LoadDesignTimeData(count: 5); // Load a few sample items as if from API
 
         if (!EquippedItems.Any() && !CharacterItems.Any() && !VaultItems.Any())
         {
@@ -70,11 +71,6 @@ public partial class InventoryViewModel : ViewModelBase
 
     private void LoadDesignTimeData(int count = 3)
     {
-        // Note: IconPaths here are illustrative. For Avalonia, they ideally should be
-        // full URI paths like "avares://GuardianUI/Assets/icons/placeholder_weapon.png"
-        // or loaded differently if they are external URLs.
-        // For now, assuming ImageSourceConverter can handle these relative paths if assets are bundled.
-
         // Equipped Items
         for (int i = 1; i <= count; i++)
         {
@@ -84,7 +80,7 @@ public partial class InventoryViewModel : ViewModelBase
                 Name = $"Arma Equipada Épica {i}",
                 ItemTypeDisplayName = "Fusil Automático",
                 TierTypeName = "Legendary",
-                IconPath = "avares://GuardianUI/Assets/icons/placeholder_weapon.png", // Example corrected path
+                IconPath = "/Assets/icons/placeholder_weapon.png", // Ensure this path is valid for design time
                 PowerLevel = 750 + i * 10,
                 CanEquip = true,
                 IsEquipped = true
@@ -100,7 +96,7 @@ public partial class InventoryViewModel : ViewModelBase
                 Name = $"Armadura Rara {i}",
                 ItemTypeDisplayName = "Casco",
                 TierTypeName = i % 2 == 0 ? "Rare" : "Uncommon",
-                IconPath = "avares://GuardianUI/Assets/icons/placeholder_armor.png", // Example corrected path
+                IconPath = "/Assets/icons/placeholder_armor.png",
                 PowerLevel = 730 + i * 5,
                 CanEquip = true,
                 IsEquipped = false
@@ -116,12 +112,52 @@ public partial class InventoryViewModel : ViewModelBase
                 Name = $"Exótico de Bóveda {i}",
                 ItemTypeDisplayName = "Cañón de Mano",
                 TierTypeName = "Exotic",
-                IconPath = "avares://GuardianUI/Assets/icons/placeholder_exotic.png", // Example corrected path
+                IconPath = "/Assets/icons/placeholder_exotic.png",
                 PowerLevel = 800 + i * 2,
-                CanEquip = false,
+                CanEquip = false, // Typically can't equip directly from vault view
                 IsEquipped = false
             });
         }
         StatusMessage = "Datos de diseño cargados.";
+    }
+}
+
+// This class would typically be in a Models folder/namespace
+// For now, keeping it here for simplicity until we structure Models properly.
+// Make sure this is compatible with the `x:DataType` in ItemCard.axaml
+namespace GuardianUI.Models
+{
+    public partial class InventoryItemDisplayViewModel : ObservableObject // Using CommunityToolkit.Mvvm
+    {
+        [ObservableProperty]
+        private string? _instanceId;
+
+        [ObservableProperty]
+        private string? _name;
+
+        [ObservableProperty]
+        private string? _itemTypeDisplayName; // e.g., "Fusil Automático", "Casco"
+
+        [ObservableProperty]
+        private string? _tierTypeName; // e.g., "Exotic", "Legendary", "Rare"
+
+        [ObservableProperty]
+        private string? _iconPath; // Path to the item's icon (URL or local asset)
+
+        [ObservableProperty]
+        private int _powerLevel;
+
+        [ObservableProperty]
+        private bool _canEquip;
+
+        [ObservableProperty]
+        private bool _isEquipped;
+
+        // Add other relevant properties:
+        // Stats (List<StatViewModel>?)
+        // Perks (List<PerkViewModel>?)
+        // DamageTypeIcon (string path for Solar, Arc, Void, Stasis, Strand)
+        // WatermarkIcon (string path for season/expansion icon)
+        // Etc.
     }
 }
