@@ -57,3 +57,4 @@ src/AppSecrets.json
 
 # Specific to this project
 guardian-definitivo/src/AppSecrets.json
+guardian-definitivo/src/DataCache/

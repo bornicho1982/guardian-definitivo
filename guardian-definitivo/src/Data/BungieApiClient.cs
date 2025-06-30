@@ -156,6 +156,16 @@ namespace GuardianDefinitivo.Data
 
             return await GetAsync<Models.Destiny.Responses.DestinyProfileResponse>(endpointPath);
         }
+
+        /// <summary>
+        /// Returns the current version of the manifest as a json object.
+        /// </summary>
+        public async Task<Models.Destiny.Config.DestinyManifest?> GetDestinyManifestAsync()
+        {
+            const string endpointPath = "/Destiny2/Manifest/";
+            // Console.WriteLine($"[APIClient] Calling GetDestinyManifestAsync endpoint: {BaseUrl}{endpointPath}");
+            return await GetAsync<Models.Destiny.Config.DestinyManifest>(endpointPath);
+        }
     }
 
     /// <summary>
