@@ -4,6 +4,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>GuardianDefinitivo</RootNamespace>
+    <!-- Setting LangVersion explicitly, though .NET 9 defaults to C# 12 -->
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia Dependencies -->
+    <!-- Make sure to use the latest stable versions -->
+    <PackageReference Include="Avalonia" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+
+    <!-- Dependency Injection -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
 
 </Project>
