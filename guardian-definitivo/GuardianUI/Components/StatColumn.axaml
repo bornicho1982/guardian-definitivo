@@ -1,9 +1,0 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="GuardianUI.Components.StatColumn">
-  <StackPanel Spacing="2">
-    <TextBlock Text="STAT" FontSize="10" Foreground="#B0B0B0"/>
-    <TextBlock Text="100" FontSize="16" Foreground="White" FontWeight="Bold"/>
-    <ProgressBar Value="100" Maximum="100" Height="5" Width="20"/>
-  </StackPanel>
-</UserControl>

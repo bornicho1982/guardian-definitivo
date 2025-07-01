@@ -1,8 +1,0 @@
-{
-  "BungieApiKey": "0746f1e80e1c44c38c813d3cdfaa4949",
-  "OAuthClientId": "49829",
-  "OAuthClientSecret": "SECRET_CONFIGURADO_EXTERNAMENTE_VER_README", // No almacenar el secret real aquí si el repo es público.
-  "DefaultLanguage": "es",
-  "EnableAnalytics": true,
-  "LastUsedProfile": null
-}

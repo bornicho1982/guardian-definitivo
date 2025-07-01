@@ -1,8 +1,0 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="GuardianUI.Components.GhostPopup"
-             Width="300" Height="400">
-  <Border Background="#AA1E1E1E" CornerRadius="10" Padding="15">
-      <TextBlock Text="Ghost Popup / Chat Placeholder" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-  </Border>
-</UserControl>
